@@ -22,7 +22,6 @@
     <string name="emoji_category_people">Persone e Corpo</string>
     <string name="emoji_category_objects">Oggetti</string>
     <string name="badge_team_member_alt">Membro del team Revolt</string>
-    <string name="home">Home</string>
     <string name="friends_outgoing_requests">Richieste in uscita</string>
     <string name="server_plus_alt">Aggiungi server</string>
     <string name="channel_age_gate_dob_invalid_future">Non puoi essere nato nel futuro, da quando esistono le macchine del tempo\?</string>
@@ -368,10 +367,6 @@
     <string name="emoji_picker_skin_tone_fitzpatrick_6">Tonalità scura</string>
     <string name="emoji_picker_search_results_header">Cerca risultati</string>
     <string name="emoji_picker_clear_search">Cancella la ricerca</string>
-    <string name="spark_sidebar_settings_tutorial">Le impostazioni sono sulla barra a lato</string>
-    <string name="spark_sidebar_settings_tutorial_description_1">Puoi aprire la barra laterale scorrendo dal bordo sinistro dello schermo.</string>
-    <string name="spark_sidebar_settings_tutorial_description_2">Quindi, tenere premuta a lungo la tua immagine del profilo per aprire le impostazioni.</string>
-    <string name="spark_sidebar_settings_tutorial_acknowledge">Capito!</string>
     <string name="notice_platform_mod_dm_title">Avviso importante relativo al tuo account</string>
     <string name="notice_platform_mod_dm_description">Hai ricevuto un avviso importante riguardante il tuo account dal nostro team di moderazione. Si prega di leggerlo attentamente.</string>
     <string name="settings_category_account">Account</string>
@@ -430,8 +425,6 @@
     <string name="settings_appearance_colour_overrides_on_error_container">Sul contenitore degli errori</string>
     <string name="settings_appearance_colour_overrides_outline">Contorno</string>
     <string name="settings_appearance_colour_overrides_outline_variant">Variante del contorno</string>
-    <string name="settings_appearance_colour_overrides_apply">Applica</string>
-    <string name="settings_appearance_colour_overrides_reset">Resetta</string>
     <string name="settings_appearance_colour_overrides_export">Esporta</string>
     <string name="settings_appearance_colour_overrides_import">Importa</string>
     <string name="settings_feedback">Feedback</string>
@@ -490,4 +483,11 @@
     <string name="channel_settings_overview_nsfw_confirm_description">Agli utenti verrà chiesto di confermare la loro età prima di unirsi a questo canale.</string>
     <string name="channel_settings_overview_nsfw_undo_confirm_description">Agli utenti non verrà più richiesta la loro età prima di entrare in questo canale. Per favore assicurati che i contenuti siano appropriati per tutte le età.</string>
     <string name="channel_settings_delete_confirm_description">Tutti i messaggi e le impostazioni di questo canale saranno perse per sempre (che è un sacco di tempo!)</string>
+    <string name="rate_limit_toast">Frena, frena! Stai facendo questa azione troppo velocemente!</string>
+    <string name="service_health_alert_body_default">Stiamo riscontrando dei problemi con i nostri servizi. Per favore controlla la pagina del nostro stato per più informazioni.</string>
+    <string name="attachment_preview_remove">Rimuovi</string>
+    <string name="service_health_alert">Attualmente in corso</string>
+    <string name="service_health_alert_actions_default">Scopri di più</string>
+    <string name="service_health_alert_actions_dismiss">Chiudi</string>
+    <string name="attachment_preview_close">Chiudi</string>
 </resources>

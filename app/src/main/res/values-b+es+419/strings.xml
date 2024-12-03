@@ -69,7 +69,6 @@
     <string name="add_attachment_alt">Añadir un archivo adjunto</string>
     <string name="remove_attachment_alt">Eliminar archivo adjunto</string>
     <string name="badge_masquerade_alt">Desde el canal enlazado</string>
-    <string name="home">Inicio</string>
     <string name="menu">Menú</string>
     <string name="logout">Cerrar sesión</string>
     <string name="server_plus_alt">Añadir servidor</string>
@@ -182,8 +181,6 @@
     <string name="media_viewer_open">Abrir</string>
     <string name="media_viewer_share_url">Compartir URL</string>
     <string name="media_viewer_share_audio">Compartir audio</string>
-    <string name="spark_sidebar_settings_tutorial">Los ajustes se encuentran en la barra lateral</string>
-    <string name="spark_sidebar_settings_tutorial_acknowledge">Entendido</string>
     <string name="settings_category_general">General</string>
     <string name="settings_appearance">Apariencia</string>
     <string name="settings_appearance_theme">Tema</string>
@@ -213,8 +210,6 @@
     <string name="media_viewer_save_failed_image">Se produjo un error al guardar la imagen</string>
     <string name="media_viewer_share_video">Compartir video</string>
     <string name="media_viewer_share_image">Compartir imagen</string>
-    <string name="spark_sidebar_settings_tutorial_description_1">Puedes abrir la barra lateral deslizando el dedo desde el borde izquierdo de tu pantalla.</string>
-    <string name="spark_sidebar_settings_tutorial_description_2">A continuación, mantén presionada tu imagen de perfil para acceder a los ajustes.</string>
     <string name="settings_category_miscellaneous">Otros</string>
     <string name="settings_appearance_theme_revolt">Revolt</string>
     <string name="settings_appearance_theme_m3dynamic">Material You</string>

@@ -64,7 +64,6 @@
     <string name="reply_mention_off">\@ বন্ধ করুন</string>
     <string name="badge_bot_alt">বট</string>
     <string name="unknown">অজানা</string>
-    <string name="home">বাড়ি</string>
     <string name="menu">মেনু</string>
     <string name="logout">লগ আউট করুন</string>
     <string name="server_plus_alt">সার্ভার যোগ করুন</string>
@@ -176,9 +175,6 @@
     <string name="media_viewer_play">চালান</string>
     <string name="media_viewer_save_failed_audio">অডিও সেভ করা যায়নি</string>
     <string name="media_viewer_share_url">লিঙ্ক শেয়ার করুন</string>
-    <string name="spark_sidebar_settings_tutorial">সমস্ত সেটিংস সাইডবারে আছে</string>
-    <string name="spark_sidebar_settings_tutorial_description_2">তারপর সেটিংস খুলতে আপনার প্রোফাইল ছবিকে কিছুক্ষণ চেপে রাখুন।</string>
-    <string name="spark_sidebar_settings_tutorial_acknowledge">বোঝা গেল</string>
     <string name="settings_category_general">সাধারণ</string>
     <string name="settings_category_miscellaneous">বিবিধ</string>
     <string name="settings_appearance">রুপ</string>
@@ -187,7 +183,6 @@
     <string name="settings_appearance_theme_revolt">Revolt</string>
     <string name="settings_appearance_theme_m3dynamic">Material You</string>
     <string name="settings_feedback">মতামত</string>
-    <string name="spark_sidebar_settings_tutorial_description_1">আপনি স্ক্রিনের বাম প্রান্ত থেকে সোয়াইপ করে সাইডবার খুলতে পারেন।</string>
     <string name="settings_appearance_theme_light">লাইট</string>
     <string name="direct_messages">সরাসরিভাবে পাঠানো মেসেজগুলো</string>
     <string name="add_server_sheet_join_by_invite_modal_description">\"rvlt.gg/Testers\" এর মতো একটি লিঙ্ক বা \"Testers\" -এর মতো একটি আমন্ত্রণ কোড লিখুন</string>
@@ -309,4 +304,24 @@
     <string name="server_context_sheet_actions_leave_confirm">%1$s ছেড়ে চলে যেতে চান\?</string>
     <string name="server_flag_verified">যাচাইকৃত সার্ভার</string>
     <string name="server_context_sheet_description_empty">এই সার্ভারের জন্য এখনো পর্যন্ত কোনো বর্ণনা সেট করা হয়নি।</string>
+    <string name="attachment_preview_close">বন্ধ করুন</string>
+    <string name="message_embed_special_youtube_switch_alt">YouTube ভিডিও চালানোর জন্য এখানে টিপুন</string>
+    <string name="emote_info_from_server">%1$s থেকে</string>
+    <string name="server_context_sheet_actions_leave_confirm_eyebrow">আপনি ততক্ষণ এখানে পুনরায় যুক্ত হতে পারবেন না যতক্ষণ না আপনাকে পুনরায় আমন্ত্রণ করা হচ্ছে।</string>
+    <string name="user_info_sheet_category_joined">যুক্ত হয়েছেন</string>
+    <string name="user_info_sheet_remove_friend">বন্ধুকে মুছে ফেলুন</string>
+    <string name="user_info_sheet_category_owner">মালিক</string>
+    <string name="user_info_sheet_owner_not_found">মালিকের সম্পর্কে কোনো তথ্য সংগ্রহ করা যায়নি</string>
+    <string name="user_info_sheet_send_message">মেসেজ পাঠান</string>
+    <string name="user_info_sheet_accept_request">গ্রহণ করুন</string>
+    <string name="user_info_sheet_block">ব্লক করুন</string>
+    <string name="service_health_alert_actions_default">আরো জানুন</string>
+    <string name="message_blocked">ব্লক করা মেসেজ</string>
+    <string name="emote_info_from_server_unknown">একটি ব্যক্তিগত সার্ভার থেকে</string>
+    <string name="server_context_sheet_actions_leave_confirm_yes">চলে যান</string>
+    <string name="server_context_sheet_actions_leave_confirm_no">থাকুন</string>
+    <string name="server_context_sheet_actions_leave_silently">নিঃশব্দে চলে যান</string>
+    <string name="server_context_sheet_actions_report">রিপোর্ট করুন</string>
+    <string name="user_info_sheet_category_badges">ব্যাজগুলি</string>
+    <string name="user_info_sheet_add_friend">বন্ধু হিসেবে যুক্ত করুন</string>
 </resources>

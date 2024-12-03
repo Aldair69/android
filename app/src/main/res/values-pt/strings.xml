@@ -49,7 +49,6 @@
     <string name="too_many_replies">Podes responder a %1$d mensagens ao mesmo tempo.</string>
     <string name="badge_bot_alt">Robô</string>
     <string name="unknown">Desconhecido</string>
-    <string name="home">Página inicial</string>
     <string name="menu">Menu</string>
     <string name="logout">Terminar sessão</string>
     <string name="no_channels_heading">Está meio estranho.</string>
@@ -148,8 +147,6 @@
     <string name="media_viewer_share_audio">Partilhar áudio</string>
     <string name="media_viewer_share_video">Partilhar vídeo</string>
     <string name="media_viewer_share_image">Partilhar imagem</string>
-    <string name="spark_sidebar_settings_tutorial_description_1">Podes abrir a barra lateral deslizando a partir da borda esquerda do ecrã.</string>
-    <string name="spark_sidebar_settings_tutorial_acknowledge">Entendido</string>
     <string name="settings_category_general">Geral</string>
     <string name="settings_category_miscellaneous">Variadas</string>
     <string name="settings_appearance">Aparência</string>
@@ -158,7 +155,7 @@
     <string name="settings_appearance_theme_revolt">Revolt</string>
     <string name="settings_appearance_theme_light">Claro</string>
     <string name="settings_appearance_theme_amoled">Preto puro</string>
-    <string name="settings_appearance_theme_m3dynamic">Material You</string>
+    <string name="settings_appearance_theme_m3dynamic">Material você</string>
     <string name="settings_feedback">Opinião</string>
     <string name="back">← Voltar</string>
     <string name="loading">A pedir informação, aguenta aí…</string>
@@ -215,8 +212,6 @@
     <string name="media_viewer_saved">Guardado</string>
     <string name="media_viewer_save_failed_video">Falha ao guardar vídeo</string>
     <string name="media_viewer_save_failed_image">Falha ao guardar imagem</string>
-    <string name="spark_sidebar_settings_tutorial">As definições encontram-se na barra lateral</string>
-    <string name="spark_sidebar_settings_tutorial_description_2">Depois manter a tua foto de perfil premida para abrir as definições.</string>
     <string name="settings_appearance_theme_m3dynamic_unsupported">Material You (não suportado)</string>
     <string name="settings_appearance_theme_m3dynamic_unsupported_toast">O Material You não é suportado por este dispositivo.</string>
     <string name="onboarding_changeable">Mas se mudares de ideias, podes sempre mudá-lo nas tuas Definições de Utilizador.</string>
@@ -333,7 +328,6 @@
     <string name="settings_appearance_colour_overrides_inverse_primary">Primário Inverso</string>
     <string name="file_picker_cannot_attach_file_invalid">Este arquivo é inválido e não pode ser anexado.</string>
     <string name="settings_appearance_colour_overrides_export">Exportar</string>
-    <string name="settings_appearance_colour_overrides_reset">Reiniciar</string>
     <string name="share_target_select_channel">Selecione um canal para compartilhar.</string>
     <string name="share_target_search_channels">Pesquisar canais</string>
     <string name="discover_alt">Descobrir</string>
@@ -429,8 +423,8 @@
     <string name="file_picker_permission_request_cta">Permitir acesso</string>
     <string name="file_picker_permission_unpartialise_request_header">Você concedeu acesso parcial a fotos e vídeos</string>
     <string name="file_picker_permission_unpartialise_request_cta">Permitir acesso total</string>
-    <string name="file_picker_chip_documents">Anexar um arquivo</string>
-    <string name="file_picker_chip_camera">Tire uma foto</string>
+    <string name="file_picker_chip_documents">Arquivos</string>
+    <string name="file_picker_chip_camera">Câmera</string>
     <string name="inline_media_picker_current_description">Mídia atualmente selecionada</string>
     <string name="inline_media_picker_no_media_placeholder">Escolha a mídia…</string>
     <string name="inline_media_picker_remove">Remover</string>
@@ -459,7 +453,6 @@
     <string name="settings_appearance_colour_overrides_import">Importar</string>
     <string name="settings_appearance_colour_overrides_import_error">Este arquivo não é um arquivo de substituição de cores válido.</string>
     <string name="settings_feedback_description">Junte-se ao servidor Revolt para dar feedback ou sugestões e relatar bugs.</string>
-    <string name="settings_appearance_colour_overrides_apply">Aplicar</string>
     <string name="settings_appearance_colour_overrides_outline_variant">Variante de esboço</string>
     <string name="settings_appearance_colour_overrides_outline">Contorno</string>
     <string name="settings_appearance_colour_overrides_on_error_container">No contêiner de erros</string>
@@ -486,4 +479,12 @@
     <string name="settings_sessions_log_out_other_confirm_no">Mantenha-se conectado</string>
     <string name="settings_appearance_colour_overrides_primary_container">Contêiner Primário</string>
     <string name="settings_appearance_colour_overrides_on_primary_container">No contêiner primário</string>
+    <string name="user_info_sheet_open">Abrir informações do usuário</string>
+    <string name="member_context_sheet_open">Opções de membros abertos</string>
+    <string name="member_context_sheet_remove_from_channel">Remover de %1$s</string>
+    <string name="user_info_sheet_category_owner">Proprietário</string>
+    <string name="user_info_sheet_owner_not_found">Não foi possível obter informações do proprietário</string>
+    <string name="link_type_no_intent">Nenhum aplicativo encontrado para manipular este link</string>
+    <string name="link_open">Abrir</string>
+    <string name="file_picker_chip_camera_none_installed">Nenhum aplicativo de câmera instalado</string>
 </resources>
