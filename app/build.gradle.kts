@@ -15,7 +15,6 @@ plugins {
     id("app.cash.sqldelight") version "2.0.1"
     id("kotlin-kapt")
     id("kotlin-parcelize")
-    id("com.google.gms.google-services")
 }
 
 val composeBomVersion = "2024.10.01"
