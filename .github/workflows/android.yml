@@ -44,4 +44,4 @@ jobs:
           name: release-apk
           retention-days: 5
           path: |
-            android/app/build/outputs/apk/app-release-unsigned.apk
+            app/build/outputs/apk/app-release-unsigned.apk
