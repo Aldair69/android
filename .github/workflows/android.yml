@@ -6,7 +6,7 @@ on:
 
 jobs:
   build:
-    if: ${{ false }} # at the moment this simply wastes our minutes, we will enable it when we have unit tests etc.
+    if: ${{ true }} # at the moment this simply wastes our minutes, we will enable it when we have unit tests etc.
 
     runs-on: ubuntu-latest
 
@@ -14,7 +14,7 @@ jobs:
       RVX_SENTRY_DSN: ${{ vars.RVX_SENTRY_DSN }}
       RVX_ANALYSIS_ENABLED: ${{ vars.RVX_ANALYSIS_ENABLED }}
       RVX_ANALYSIS_BASEURL: ${{ vars.RVX_ANALYSIS_BASEURL }}
-      RVX_DEBUG_APP_NAME: ${{ vars.RVX_DEBUG_APP_NAME }}
+      RVX_DEBUG_APP_NAME: "Revolt"
       RVX_BUILD_FLAVOUR_ID: ${{ vars.RVX_BUILD_FLAVOUR_ID }}
 
     steps:
@@ -38,10 +38,10 @@ jobs:
       - name: Build with Gradle
         run: ./gradlew --no-daemon assembleDebug
 
-      - name: Archive debug APK
+      - name: Archive release APK
         uses: actions/upload-artifact@v3
         with:
-          name: debug-apk
+          name: release-apk
           retention-days: 5
           path: |
-            app/build/outputs/apk/debug/app-debug.apk
+            android/app/build/outputs/apk/app-release-unsigned.apk
