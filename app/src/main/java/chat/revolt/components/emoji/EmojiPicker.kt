@@ -404,7 +404,8 @@ fun EmojiPicker(
                             )
                         } else {
                             RemoteImage(
-                                url = "$REVOLT_FILES/icons/${server.icon.id}/icon.gif?max_side=64",
+                                url = "$REVOLT_FILES/icons/${server.icon.id}",
+                                allowAnimation = false,
                                 description = server.name,
                                 modifier = Modifier
                                     .clip(CircleShape)
@@ -621,7 +622,7 @@ fun ColumnScope.PickerItem(
                 verticalArrangement = Arrangement.Center
             ) {
                 RemoteImage(
-                    url = "$REVOLT_FILES/emojis/${item.emote.id}/emoji.gif",
+                    url = "$REVOLT_FILES/emojis/${item.emote.id}",
                     description = item.emote.name,
                     contentScale = ContentScale.Fit,
                     modifier = Modifier

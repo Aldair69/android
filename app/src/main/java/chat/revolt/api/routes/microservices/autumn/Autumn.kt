@@ -1,6 +1,8 @@
 package chat.revolt.api.routes.microservices.autumn
 
+import chat.revolt.api.HitRateLimitException
 import chat.revolt.api.REVOLT_FILES
+import chat.revolt.api.RevoltAPI
 import chat.revolt.api.RevoltHttp
 import chat.revolt.api.RevoltJson
 import chat.revolt.api.schemas.AutumnError
@@ -8,6 +10,7 @@ import chat.revolt.api.schemas.AutumnId
 import io.ktor.client.plugins.onUpload
 import io.ktor.client.request.forms.MultiPartFormDataContent
 import io.ktor.client.request.forms.formData
+import io.ktor.client.request.header
 import io.ktor.client.request.post
 import io.ktor.client.request.setBody
 import io.ktor.client.statement.bodyAsText
@@ -50,6 +53,7 @@ suspend fun uploadToAutumn(
                 }
             )
         )
+        header(RevoltAPI.TOKEN_HEADER_NAME, RevoltAPI.sessionToken)
         onUpload { bytesSentTotal, contentLength ->
             contentLength?.let { onProgress(bytesSentTotal, it) }
         }
@@ -64,7 +68,7 @@ suspend fun uploadToAutumn(
             throw Exception(error.type)
         } catch (e: Exception) {
             if (response.status == HttpStatusCode.TooManyRequests) {
-                throw Exception("Rate limited")
+                throw HitRateLimitException()
             }
             if (response.status == HttpStatusCode.PayloadTooLarge) {
                 throw Exception("File too large")

@@ -66,11 +66,12 @@ fun ChannelSheetHeader(
         ) {
             if (channelIcon != null) {
                 RemoteImage(
-                    url = "$REVOLT_FILES/icons/${channelIcon.id ?: ""}?max_side=48",
+                    url = "$REVOLT_FILES/icons/${channelIcon.id ?: ""}",
                     description = null, // decorative
                     contentScale = ContentScale.Crop,
                     height = 48,
                     width = 48,
+                    allowAnimation = false,
                     modifier = Modifier
                         .size(48.dp)
                 )

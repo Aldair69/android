@@ -338,11 +338,12 @@ fun ChannelSideDrawer(
                                 }
                             }) {
                         val icon = serverInList.icon?.id?.let { iconId ->
-                            "$REVOLT_FILES/icons/$iconId/server.png?max_side=256"
+                            "$REVOLT_FILES/icons/$iconId"
                         }
                         if (icon != null) {
                             RemoteImage(
                                 url = icon,
+                                allowAnimation = false,
                                 modifier = Modifier
                                     .size(48.dp)
                                     .clip(CircleShape),

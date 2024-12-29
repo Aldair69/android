@@ -1,4 +1,4 @@
-package chat.revolt.components.markdown.jbm
+package chat.revolt.markdown.jbm
 
 import android.content.Intent
 import android.content.res.Configuration
@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -34,11 +35,13 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.structuralEqualityPolicy
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.geometry.CornerRadius
 import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.geometry.RoundRect
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.drawscope.Stroke
@@ -67,12 +70,14 @@ import chat.revolt.R
 import chat.revolt.activities.InviteActivity
 import chat.revolt.api.REVOLT_FILES
 import chat.revolt.api.RevoltAPI
+import chat.revolt.api.internals.isUlid
 import chat.revolt.api.routes.custom.fetchEmoji
 import chat.revolt.api.schemas.isInviteUri
 import chat.revolt.api.settings.LoadedSettings
 import chat.revolt.callbacks.Action
 import chat.revolt.callbacks.ActionChannel
 import chat.revolt.components.generic.RemoteImage
+import chat.revolt.components.generic.UserAvatar
 import chat.revolt.components.markdown.Annotations
 import chat.revolt.components.utils.detectTapGesturesConditionalConsume
 import chat.revolt.ui.theme.FragmentMono
@@ -84,6 +89,7 @@ import dev.snipme.highlights.model.ColorHighlight
 import dev.snipme.highlights.model.SyntaxLanguage
 import dev.snipme.highlights.model.SyntaxThemes
 import kotlinx.coroutines.launch
+import logcat.logcat
 import org.intellij.markdown.MarkdownElementTypes
 import org.intellij.markdown.MarkdownTokenTypes
 import org.intellij.markdown.ast.ASTNode
@@ -97,13 +103,13 @@ enum class JBMAnnotations(val tag: String, val clickable: Boolean) {
     ChannelMention("ChannelMention", true),
     CustomEmote("CustomEmote", true),
     Timestamp("Timestamp", false),
-    Checkbox("Checkbox", false)
+    Checkbox("Checkbox", false),
+    UserAvatar("UserAvatar", true),
+    JBMBackgroundRoundingStart("JBMBackgroundRoundingStart", false),
+    JBMBackgroundRoundingEnd("JBMBackgroundRoundingEnd", false),
 }
 
 object JBMRegularExpressions {
-    val Mention = Regex("<@([0-9A-Z]{26})>")
-    val Channel = Regex("<#([0-9A-Z]{26})>")
-    val CustomEmote = Regex(":([0-9A-Z]{26}):")
     val Timestamp = Regex("<t:([0-9]+?)(:[tTDfFR])?>")
 }
 
@@ -128,6 +134,8 @@ data class JBMarkdownTreeState(
 
 val LocalJBMarkdownTreeState =
     compositionLocalOf(structuralEqualityPolicy()) { JBMarkdownTreeState() }
+
+val avatarPadding = 2.dp
 
 @Composable
 @JBM
@@ -175,6 +183,95 @@ private fun annotateText(
                         node.getTextInNode(sourceText)
                     }
                     append(source)
+                }
+
+                RSMElementTypes.USER_MENTION -> {
+                    val contents = node.getTextInNode(sourceText).toString()
+                    val userId = contents.removeSurrounding("<@", ">")
+                    if (userId == contents || !userId.isUlid()) {
+                        // Invalid user mention. Append as if it were regular text.
+                        for (child in node.children) {
+                            append(annotateText(state, child))
+                        }
+                    } else {
+                        pushStringAnnotation(
+                            tag = JBMAnnotations.UserMention.tag,
+                            annotation = userId
+                        )
+                        pushStyle(
+                            SpanStyle(
+                                color = state.colors.clickable,
+                                background = state.colors.clickableBackground
+                            )
+                        )
+
+                        val member = state.currentServer?.let { serverId ->
+                            RevoltAPI.members.getMember(serverId, userId)
+                        }
+                        val mentionDisplay = member?.nickname
+                            ?: RevoltAPI.userCache[userId]?.username
+                            ?: "<@$userId>"
+
+                        appendInlineContent(JBMAnnotations.JBMBackgroundRoundingStart.tag)
+                        appendInlineContent(JBMAnnotations.UserAvatar.tag, userId)
+                        append(" ")
+                        append(mentionDisplay)
+                        appendInlineContent(JBMAnnotations.JBMBackgroundRoundingEnd.tag)
+
+                        pop()
+                        pop()
+                    }
+                }
+
+                RSMElementTypes.CHANNEL_MENTION -> {
+                    val contents = node.getTextInNode(sourceText).toString()
+                    val channelId = contents.removeSurrounding("<#", ">")
+                    if (channelId == contents || !channelId.isUlid()) {
+                        // Invalid channel mention. Append as if it were regular text.
+                        for (child in node.children) {
+                            append(annotateText(state, child))
+                        }
+                    } else {
+                        pushStringAnnotation(
+                            tag = JBMAnnotations.ChannelMention.tag,
+                            annotation = channelId
+                        )
+                        pushStyle(
+                            SpanStyle(
+                                color = state.colors.clickable,
+                                background = state.colors.clickableBackground
+                            )
+                        )
+
+                        val channel = RevoltAPI.channelCache[channelId]
+                        val mentionDisplay = channel?.name?.let { name -> "#$name" }
+                            ?: "<#$channelId>"
+
+                        appendInlineContent(JBMAnnotations.JBMBackgroundRoundingStart.tag)
+                        append(mentionDisplay)
+                        appendInlineContent(JBMAnnotations.JBMBackgroundRoundingEnd.tag)
+
+                        pop()
+                        pop()
+                    }
+                }
+
+                RSMElementTypes.CUSTOM_EMOTE -> {
+                    val contents = node.getTextInNode(sourceText).toString()
+                    val emoteId = contents.removeSurrounding(":", ":")
+                    if (emoteId == contents || !emoteId.isUlid()) {
+                        // Invalid custom emote. Append as if it were regular text.
+                        for (child in node.children) {
+                            append(annotateText(state, child))
+                        }
+                    } else {
+                        pushStringAnnotation(
+                            tag = JBMAnnotations.CustomEmote.tag,
+                            annotation = emoteId
+                        )
+                        appendInlineContent(JBMAnnotations.CustomEmote.tag, emoteId)
+                        pop()
+                    }
                 }
 
                 MarkdownTokenTypes.ATX_HEADER -> {
@@ -266,7 +363,8 @@ private fun annotateText(
                 }
 
                 MarkdownElementTypes.PARAGRAPH,
-                MarkdownElementTypes.HTML_BLOCK -> {
+                MarkdownElementTypes.HTML_BLOCK,
+                MarkdownTokenTypes.HTML_TAG -> {
                     for (child in node.children) {
                         append(annotateText(state, child))
                     }
@@ -443,6 +541,36 @@ private fun JBMText(node: ASTNode, modifier: Modifier) {
 
                             return@handler true
                         }
+
+                        JBMAnnotations.UserMention.tag -> {
+                            scope.launch {
+                                ActionChannel.send(
+                                    Action.OpenUserSheet(
+                                        item,
+                                        mdState.currentServer
+                                    )
+                                )
+                            }
+                            return@handler true
+                        }
+
+                        JBMAnnotations.ChannelMention.tag -> {
+                            scope.launch {
+                                ActionChannel.send(
+                                    Action.SwitchChannel(item)
+                                )
+                            }
+                            return@handler true
+                        }
+
+                        JBMAnnotations.CustomEmote.tag -> {
+                            scope.launch {
+                                ActionChannel.send(
+                                    Action.EmoteInfo(item)
+                                )
+                            }
+                            return@handler true
+                        }
                     }
                 }
             }
@@ -460,47 +588,6 @@ private fun JBMText(node: ASTNode, modifier: Modifier) {
             ).firstOrNull()?.let { annotation ->
                 scope.launch {
                     ActionChannel.send(Action.LinkInfo(annotation.item))
-                }
-
-                return@handler true
-            }
-
-            annotatedText.getStringAnnotations(
-                tag = Annotations.UserMention.tag,
-                start = offset,
-                end = offset
-            ).firstOrNull()?.let { annotation ->
-                scope.launch {
-                    ActionChannel.send(
-                        Action.OpenUserSheet(
-                            annotation.item,
-                            mdState.currentServer
-                        )
-                    )
-                }
-
-                return@handler true
-            }
-
-            annotatedText.getStringAnnotations(
-                tag = Annotations.ChannelMention.tag,
-                start = offset,
-                end = offset
-            ).firstOrNull()?.let { annotation ->
-                scope.launch {
-                    ActionChannel.send(Action.SwitchChannel(annotation.item))
-                }
-
-                return@handler true
-            }
-
-            annotatedText.getStringAnnotations(
-                tag = Annotations.CustomEmote.tag,
-                start = offset,
-                end = offset
-            ).firstOrNull()?.let { annotation ->
-                scope.launch {
-                    ActionChannel.send(Action.EmoteInfo(annotation.item))
                 }
 
                 return@handler true
@@ -594,12 +681,121 @@ private fun JBMText(node: ASTNode, modifier: Modifier) {
                 } else {
                     with(LocalDensity.current) {
                         RemoteImage(
-                            url = "$REVOLT_FILES/emojis/${id}/emoji.gif",
+                            url = "$REVOLT_FILES/emojis/${id}",
                             description = emote.name,
                             contentScale = ContentScale.Fit,
                             modifier = Modifier
                                 .width((LocalTextStyle.current.fontSize * 1.5).toDp())
                                 .height((LocalTextStyle.current.fontSize * 1.5).toDp())
+                        )
+                    }
+                }
+            },
+            JBMAnnotations.UserAvatar.tag to with(LocalDensity.current) {
+                val placeholderBaseWidth =
+                    (LocalTextStyle.current.fontSize * 1.5).toPx() - (avatarPadding * 2).toPx()
+                val widthTolerancePx =
+                    2 // Else we get a gap of about 1-2 pixels due to rounding errors
+                val placeholderBaseHeight = (LocalTextStyle.current.fontSize * 1.5).toPx()
+                val heightTolerancePx = 2 // Dito
+
+                InlineTextContent(
+                    placeholder = Placeholder(
+                        width = (placeholderBaseWidth - widthTolerancePx).toSp(),
+                        height = (placeholderBaseHeight - heightTolerancePx).toSp(),
+                        placeholderVerticalAlign = PlaceholderVerticalAlign.Center
+                    ),
+                ) { id ->
+                    val user = RevoltAPI.userCache[id]
+                    Box(
+                        contentAlignment = Alignment.Center,
+                        modifier = Modifier
+                            .background(LocalJBMarkdownTreeState.current.colors.clickableBackground)
+                            .padding(vertical = avatarPadding)
+                    ) {
+                        if (user == null) {
+                            UserAvatar(
+                                username = stringResource(R.string.unknown),
+                                userId = id,
+                                size = (LocalTextStyle.current.fontSize * 1.5).toDp() - (avatarPadding * 2),
+                                modifier = Modifier.aspectRatio(1f, true)
+                            )
+                        } else {
+                            UserAvatar(
+                                username = user.username ?: "",
+                                avatar = user.avatar,
+                                userId = user.id ?: "",
+                                size = (LocalTextStyle.current.fontSize * 1.5).toDp() - (avatarPadding * 2),
+                                modifier = Modifier.aspectRatio(1f, true)
+                            )
+                        }
+                    }
+                }
+            },
+            JBMAnnotations.JBMBackgroundRoundingStart.tag to with(LocalDensity.current) {
+                InlineTextContent(
+                    placeholder = Placeholder(
+                        width = LocalTextStyle.current.fontSize * 0.25,
+                        height = LocalTextStyle.current.fontSize * 1.5,
+                        placeholderVerticalAlign = PlaceholderVerticalAlign.Center
+                    ),
+                ) {
+                    val colour = LocalJBMarkdownTreeState.current.colors.clickableBackground
+                    Canvas(
+                        modifier = Modifier
+                            .width((LocalTextStyle.current.fontSize * 0.25).toDp())
+                            .height((LocalTextStyle.current.fontSize * 1.5).toDp())
+                    ) {
+                        drawPath(
+                            Path().apply {
+                                addRoundRect(
+                                    RoundRect(
+                                        0f,
+                                        0f,
+                                        size.width,
+                                        size.height,
+                                        topLeftCornerRadius = CornerRadius(size.width),
+                                        topRightCornerRadius = CornerRadius(0f),
+                                        bottomLeftCornerRadius = CornerRadius(size.width),
+                                        bottomRightCornerRadius = CornerRadius(0f)
+                                    )
+                                )
+                            },
+                            color = colour
+                        )
+                    }
+                }
+            },
+            JBMAnnotations.JBMBackgroundRoundingEnd.tag to with(LocalDensity.current) {
+                InlineTextContent(
+                    placeholder = Placeholder(
+                        width = LocalTextStyle.current.fontSize * 0.25,
+                        height = LocalTextStyle.current.fontSize * 1.5,
+                        placeholderVerticalAlign = PlaceholderVerticalAlign.Center
+                    ),
+                ) {
+                    val colour = LocalJBMarkdownTreeState.current.colors.clickableBackground
+                    Canvas(
+                        modifier = Modifier
+                            .width((LocalTextStyle.current.fontSize * 0.25).toDp())
+                            .height((LocalTextStyle.current.fontSize * 1.5).toDp())
+                    ) {
+                        drawPath(
+                            Path().apply {
+                                addRoundRect(
+                                    RoundRect(
+                                        0f,
+                                        0f,
+                                        size.width,
+                                        size.height,
+                                        topLeftCornerRadius = CornerRadius(0f),
+                                        topRightCornerRadius = CornerRadius(size.width),
+                                        bottomLeftCornerRadius = CornerRadius(0f),
+                                        bottomRightCornerRadius = CornerRadius(size.width)
+                                    )
+                                )
+                            },
+                            color = colour
                         )
                     }
                 }
@@ -807,7 +1003,32 @@ private fun JBMBlock(node: ASTNode, modifier: Modifier, nestingCounter: Int = 0)
         }
 
         MarkdownElementTypes.CODE_FENCE -> {
-            JBMCodeBlockContent(node, modifier)
+            if (LocalJBMarkdownTreeState.current.singleLine) {
+                Text(
+                    text = buildAnnotatedString {
+                        withStyle(SpanStyle(fontFamily = FragmentMono)) {
+                            val codeFenceLanguage =
+                                node.children.firstOrNull { it.type == MarkdownTokenTypes.FENCE_LANG }
+                                    ?.getTextInNode(state.sourceText)?.toString()
+                            val languageName = languageDisplayNamedResource[
+                                languageAliases[codeFenceLanguage]
+                                    ?: SyntaxLanguage.getByName(codeFenceLanguage ?: "")
+                            ]?.let {
+                                stringResource(it)
+                            }
+
+                            append(languageName?.let {
+                                stringResource(R.string.programming_language_snippet, it)
+                            } ?: stringResource(R.string.programming_language_snippet_default))
+                        }
+                    },
+                    maxLines = if (state.singleLine) 1 else Int.MAX_VALUE,
+                    overflow = if (state.singleLine) TextOverflow.Ellipsis else TextOverflow.Clip,
+                    modifier = modifier
+                )
+            } else {
+                JBMCodeBlockContent(node, modifier)
+            }
         }
 
         MarkdownElementTypes.BLOCK_QUOTE -> {

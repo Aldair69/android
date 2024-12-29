@@ -8,6 +8,7 @@ import android.net.Uri
 import android.os.Build
 import android.util.DisplayMetrics
 import android.util.Log
+import android.view.KeyEvent
 import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputConnection
 import android.view.inputmethod.InputMethodManager
@@ -255,7 +256,7 @@ fun NativeMessageField(
                                         userId = item.user.id ?: "",
                                         avatar = item.user.avatar,
                                         rawUrl = item.member?.avatar?.id?.let {
-                                            "$REVOLT_FILES/avatars/$it?max_side=64"
+                                            "$REVOLT_FILES/avatars/$it"
                                         },
                                         size = SuggestionChipDefaults.IconSize,
                                     )
@@ -317,7 +318,7 @@ fun NativeMessageField(
                                         )
                                     } else {
                                         RemoteImage(
-                                            url = "$REVOLT_FILES/emojis/${item.custom?.id}/emoji.gif",
+                                            url = "$REVOLT_FILES/emojis/${item.custom?.id}",
                                             description = null,
                                             contentScale = ContentScale.Fit,
                                             modifier = Modifier
@@ -429,6 +430,19 @@ fun NativeMessageField(
                                         )
                                     )
                                 }
+                            }
+                        }
+
+                        override fun onKeyUp(keyCode: Int, event: KeyEvent): Boolean {
+                            return when (keyCode) {
+                                KeyEvent.KEYCODE_ENTER -> {
+                                    if (event.isCtrlPressed && sendButtonVisible) {
+                                        onSendMessage()
+                                        true
+                                    } else super.onKeyUp(keyCode, event)
+                                }
+
+                                else -> super.onKeyUp(keyCode, event)
                             }
                         }
                     }.apply {

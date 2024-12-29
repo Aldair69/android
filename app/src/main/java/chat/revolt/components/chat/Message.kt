@@ -78,10 +78,10 @@ import chat.revolt.components.generic.UserAvatar
 import chat.revolt.components.generic.UserAvatarWidthPlaceholder
 import chat.revolt.components.markdown.LocalMarkdownTreeConfig
 import chat.revolt.components.markdown.RichMarkdown
-import chat.revolt.components.markdown.jbm.JBM
-import chat.revolt.components.markdown.jbm.JBMRenderer
-import chat.revolt.components.markdown.jbm.LocalJBMarkdownTreeState
 import chat.revolt.internals.text.Gigamoji
+import chat.revolt.markdown.jbm.JBM
+import chat.revolt.markdown.jbm.JBMRenderer
+import chat.revolt.markdown.jbm.LocalJBMarkdownTreeState
 import kotlinx.coroutines.launch
 import chat.revolt.api.schemas.Message as MessageSchema
 
@@ -132,7 +132,7 @@ fun authorAvatarUrl(message: MessageSchema): String? {
     val member = message.author?.let { RevoltAPI.members.getMember(serverId, it) }
         ?: return null
 
-    return member.avatar?.let { "$REVOLT_FILES/avatars/${it.id}?max_side=256" }
+    return member.avatar?.let { "$REVOLT_FILES/avatars/${it.id}" }
 }
 
 fun viewUrlInBrowser(ctx: android.content.Context, url: String) {
@@ -370,6 +370,7 @@ fun Message(
                                 if (Experiments.useKotlinBasedMarkdownRenderer.isEnabled) {
                                     CompositionLocalProvider(
                                         LocalJBMarkdownTreeState provides LocalJBMarkdownTreeState.current.copy(
+                                            currentServer = RevoltAPI.channelCache[message.channel]?.server,
                                             fontSizeMultiplier = Gigamoji.useGigamojiForMessage(
                                                 message.content
                                             )

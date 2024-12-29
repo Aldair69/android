@@ -6,6 +6,10 @@ import android.net.ConnectivityManager
 import android.net.NetworkCapabilities
 import android.os.Bundle
 import android.util.Log
+import android.view.KeyEvent
+import android.view.KeyboardShortcutGroup
+import android.view.KeyboardShortcutInfo
+import android.view.Menu
 import android.widget.Toast
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
@@ -17,8 +21,11 @@ import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.windowsizeclass.ExperimentalMaterial3WindowSizeClassApi
 import androidx.compose.material3.windowsizeclass.WindowSizeClass
 import androidx.compose.material3.windowsizeclass.calculateWindowSizeClass
@@ -27,6 +34,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.IntOffset
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
@@ -99,6 +107,7 @@ class MainActivityViewModel @Inject constructor(
     val nextDestination = MutableStateFlow<String?>(null)
     var isConnected = MutableStateFlow(false)
     val isReady = MutableStateFlow(false)
+    val couldNotLogIn = MutableStateFlow(false)
 
     private fun hasInternetConnection(): Boolean {
         val connectivityManager =
@@ -174,15 +183,8 @@ class MainActivityViewModel @Inject constructor(
             }
 
             if (canReachRevolt && !valid) {
-                Log.d("MainActivity", "Session token is invalid, clearing session")
-                Toast.makeText(
-                    context,
-                    context.getString(R.string.token_invalid_toast),
-                    Toast.LENGTH_SHORT
-                ).show()
-                kvStorage.remove("sessionToken")
-                kvStorage.remove("sessionId")
-                startWithDestination("login/greeting")
+                Log.d("MainActivity", "Session token is invalid, could not log in")
+                couldNotLogIn.emit(true)
             } else {
                 try {
                     Log.d("MainActivity", "Session token is valid, checking onboarding state")
@@ -201,8 +203,8 @@ class MainActivityViewModel @Inject constructor(
                     ).show()
                     return@launch startWithoutDestination()
                 } catch (e: Exception) {
-                    Log.e("MainActivity", "Failed to check onboarding state, clearing session", e)
-                    startWithDestination("login/greeting")
+                    Log.e("MainActivity", "Failed to check onboarding state, could not log in", e)
+                    couldNotLogIn.emit(true)
                 }
 
                 try {
@@ -211,12 +213,18 @@ class MainActivityViewModel @Inject constructor(
                     RevoltAPI.setSessionId(id)
                     startWithDestination("chat")
                 } catch (e: Exception) {
-                    Log.e("MainActivity", "Failed to login, clearing session", e)
-                    kvStorage.remove("sessionToken")
-                    kvStorage.remove("sessionId")
-                    startWithDestination("login/greeting")
+                    Log.e("MainActivity", "Failed to login, could not log in", e)
+                    couldNotLogIn.emit(true)
                 }
             }
+        }
+    }
+
+    fun logOut() {
+        viewModelScope.launch {
+            kvStorage.remove("sessionToken")
+            kvStorage.remove("sessionId")
+            startWithDestination("login/greeting")
         }
     }
 
@@ -248,6 +256,12 @@ class MainActivityViewModel @Inject constructor(
         viewModelScope.launch {
             activeAlert.emit(null)
             isAlertActive.emit(false)
+        }
+    }
+
+    fun onDismissLoginError() {
+        viewModelScope.launch {
+            couldNotLogIn.emit(false)
         }
     }
 
@@ -307,11 +321,38 @@ class MainActivity : AppCompatActivity() {
                 viewModel.isConnected.collectAsState().value,
                 viewModel.activeAlert.collectAsState().value,
                 viewModel.isAlertActive.collectAsState().value,
+                viewModel.couldNotLogIn.collectAsState().value,
+                viewModel::logOut,
                 viewModel::onDismissHealthAlert,
+                viewModel::onDismissLoginError,
                 viewModel::checkLoggedInState,
                 viewModel::updateNextDestination
             )
         }
+    }
+
+    override fun onProvideKeyboardShortcuts(
+        data: MutableList<KeyboardShortcutGroup>?,
+        menu: Menu?,
+        deviceId: Int
+    ) {
+        val messaging = KeyboardShortcutGroup(
+            getString(R.string.keyboard_shortcut_messaging),
+            listOf(
+                KeyboardShortcutInfo(
+                    getString(R.string.keyboard_shortcut_messaging_new_line),
+                    KeyEvent.KEYCODE_ENTER,
+                    0
+                ),
+                KeyboardShortcutInfo(
+                    getString(R.string.keyboard_shortcut_messaging_send_message),
+                    KeyEvent.KEYCODE_ENTER,
+                    KeyEvent.META_CTRL_ON
+                )
+            )
+        )
+
+        data?.add(messaging)
     }
 
     companion object {
@@ -336,7 +377,10 @@ fun AppEntrypoint(
     isConnected: Boolean,
     healthNotice: HealthNotice?,
     isHealthAlertActive: Boolean,
+    couldNotLogIn: Boolean,
+    onLogout: () -> Unit = {},
     onDismissHealthAlert: () -> Unit = {},
+    onDismissLoginError: () -> Unit = {},
     onRetryConnection: () -> Unit,
     onUpdateNextDestination: (String) -> Unit = {}
 ) {
@@ -355,6 +399,40 @@ fun AppEntrypoint(
                 healthNotice?.let {
                     HealthAlert(notice = healthNotice, onDismiss = onDismissHealthAlert)
                 }
+            }
+
+            if (couldNotLogIn) {
+                AlertDialog(
+                    onDismissRequest = {
+                        // no-op
+                    },
+                    title = {
+                        Text(stringResource(R.string.could_not_log_in_heading))
+                    },
+                    text = {
+                        Text(stringResource(R.string.could_not_log_in_body))
+                    },
+                    confirmButton = {
+                        TextButton(
+                            onClick = {
+                                onDismissLoginError()
+                                onRetryConnection()
+                            }
+                        ) {
+                            Text(stringResource(R.string.could_not_log_in_cta_try_again))
+                        }
+                    },
+                    dismissButton = {
+                        TextButton(
+                            onClick = {
+                                onDismissLoginError()
+                                onLogout()
+                            }
+                        ) {
+                            Text(stringResource(R.string.could_not_log_in_cta_logout))
+                        }
+                    }
+                )
             }
 
             NavHost(

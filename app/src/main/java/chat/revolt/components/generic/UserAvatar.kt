@@ -91,6 +91,7 @@ fun UserAvatar(
     size: Dp = 40.dp,
     presenceSize: Dp = 16.dp,
     shape: Shape = RoundedCornerShape(LoadedSettings.avatarRadius),
+    allowAnimation: Boolean = false,
     onLongClick: (() -> Unit)? = null,
     onClick: (() -> Unit)? = null
 ) {
@@ -101,9 +102,10 @@ fun UserAvatar(
     ) {
         if (avatar != null) {
             RemoteImage(
-                url = rawUrl ?: "$REVOLT_FILES/avatars/${avatar.id}/user.png?max_side=256",
+                url = rawUrl ?: "$REVOLT_FILES/avatars/${avatar.id}",
                 contentScale = ContentScale.Crop,
                 description = stringResource(id = R.string.avatar_alt, username),
+                allowAnimation = allowAnimation,
                 modifier = Modifier
                     .clip(shape)
                     .size(size)
@@ -123,6 +125,7 @@ fun UserAvatar(
             RemoteImage(
                 url = "$REVOLT_BASE/users/${userId.ifBlank { "0".repeat(26) }}/default_avatar",
                 description = stringResource(id = R.string.avatar_alt, username),
+                allowAnimation = allowAnimation,
                 modifier = Modifier
                     .clip(shape)
                     .size(size)
@@ -164,7 +167,8 @@ fun GroupIcon(
     ) {
         if (icon?.id != null) {
             RemoteImage(
-                url = rawUrl ?: "$REVOLT_FILES/icons/${icon.id}/group.png",
+                url = rawUrl ?: "$REVOLT_FILES/icons/${icon.id}",
+                allowAnimation = false,
                 contentScale = ContentScale.Crop,
                 description = stringResource(id = R.string.avatar_alt, name),
                 modifier = Modifier
