@@ -15,6 +15,7 @@ import androidx.activity.compose.setContent
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.animation.AnimatedContentTransitionScope
+import androidx.compose.animation.core.CubicBezierEasing
 import androidx.compose.animation.core.EaseInOutExpo
 import androidx.compose.animation.core.FiniteAnimationSpec
 import androidx.compose.animation.core.tween
@@ -70,6 +71,7 @@ import chat.revolt.screens.labs.LabsRootScreen
 import chat.revolt.screens.login.LoginGreetingScreen
 import chat.revolt.screens.login.LoginScreen
 import chat.revolt.screens.login.MfaScreen
+import chat.revolt.screens.login2.InitScreen
 import chat.revolt.screens.register.OnboardingScreen
 import chat.revolt.screens.register.RegisterDetailsScreen
 import chat.revolt.screens.register.RegisterGreetingScreen
@@ -282,6 +284,7 @@ class MainActivity : AppCompatActivity() {
         super.onResume()
         DynamicColors.applyToActivityIfAvailable(this)
         DynamicColors.applyToActivitiesIfAvailable(RevoltApplication.instance)
+        @Suppress("DEPRECATION") // We are fixing a bug in the splash screen
         window.statusBarColor = Color.Transparent.toArgb()
     }
 
@@ -290,6 +293,7 @@ class MainActivity : AppCompatActivity() {
         super.onConfigurationChanged(newConfig)
         DynamicColors.applyToActivityIfAvailable(this)
         DynamicColors.applyToActivitiesIfAvailable(RevoltApplication.instance)
+        @Suppress("DEPRECATION") // We are fixing a bug in the splash screen
         window.statusBarColor = Color.Transparent.toArgb()
     }
 
@@ -302,6 +306,7 @@ class MainActivity : AppCompatActivity() {
             options.release = BuildConfig.VERSION_NAME
         }
 
+        @Suppress("DEPRECATION") // We are fixing a bug in the splash screen
         window.statusBarColor = Color.Transparent.toArgb()
         WindowCompat.setDecorFitsSystemWindows(window, false)
 
@@ -507,8 +512,22 @@ fun AppEntrypoint(
                         }
                     )
                 }
+                
+                composable("login2/init") { InitScreen(navController) }
 
-                composable("chat") {
+                composable("chat",
+                    enterTransition = {
+                        slideIntoContainer(
+                            AnimatedContentTransitionScope.SlideDirection.Up,
+                            animationSpec = tween(
+                                400,
+                                // cf. https://m3.material.io/styles/motion/easing-and-duration/tokens-specs#cbea5c6e-7b0d-47a0-98c3-767080a38d95
+                                easing = CubicBezierEasing(0.05f, 0.7f, 0.1f, 1f)
+                            ),
+                            initialOffset = { it / 3 }
+                        ) + fadeIn(animationSpec = RevoltTweenFloat)
+                    }
+                ) {
                     ChatRouterScreen(
                         navController,
                         windowSizeClass,
