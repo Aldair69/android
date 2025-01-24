@@ -38,10 +38,13 @@ jobs:
       - name: Build with Gradle
         run: ./gradlew --no-daemon assembleRelease
 
+      - name: Sign apk
+      - run: apt install wget && wget https://github.com/appium-boneyard/sign/releases/download/1.0/sign-1.0.jar && java -jar sign-1.0 app/build/outputs/apk/release/app-release-unsigned.apk --override
+
       - name: Archive release APK
         uses: actions/upload-artifact@v3
         with:
           name: release-apk
           retention-days: 5
           path: |
-            app/build/outputs/apk/*
+            app/build/outputs/apk/release/app-release-unsigned.apk
