@@ -39,13 +39,13 @@ jobs:
         run: ./gradlew --no-daemon assembleRelease
 
       - name: Get wget
-      - run: apt install wget
+        run: sudo apt-get install wget
 
       - name: Dowload signer
-      - run: wget https://github.com/appium-boneyard/sign/releases/download/1.0/sign-1.0.jar
+        run: wget https://github.com/appium-boneyard/sign/releases/download/1.0/sign-1.0.jar
 
       - name: Sign APK with testkeys
-      - run: java -jar sign-1.0.jar app/build/outputs/apk/release/app-release-unsigned.apk --override
+        run: java -jar sign-1.0.jar app/build/outputs/apk/release/app-release-unsigned.apk --override
 
       - name: Archive release APK
         uses: actions/upload-artifact@v3
