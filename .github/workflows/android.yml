@@ -38,8 +38,14 @@ jobs:
       - name: Build with Gradle
         run: ./gradlew --no-daemon assembleRelease
 
-      - name: Sign apk
-      - run: apt install wget && wget https://github.com/appium-boneyard/sign/releases/download/1.0/sign-1.0.jar && java -jar sign-1.0 app/build/outputs/apk/release/app-release-unsigned.apk --override
+      - name: Get wget
+      - run: apt install wget
+
+      - name: Dowload signer
+      - run: && wget https://github.com/appium-boneyard/sign/releases/download/1.0/sign-1.0.jar
+
+      - name: Sign APK with testkeys
+      - run: java -jar sign-1.0.jar app/build/outputs/apk/release/app-release-unsigned.apk --override
 
       - name: Archive release APK
         uses: actions/upload-artifact@v3
@@ -48,3 +54,12 @@ jobs:
           retention-days: 5
           path: |
             app/build/outputs/apk/release/app-release-unsigned.apk
+
+      - name: Upload Release
+        uses: xresloader/upload-to-github-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.TOKEN }}
+        with:
+         file: "app/build/outputs/apk/release/app-release-unsigned.apk"
+         tags: true
+         draft: true
