@@ -42,7 +42,7 @@ jobs:
       - run: apt install wget
 
       - name: Dowload signer
-      - run: && wget https://github.com/appium-boneyard/sign/releases/download/1.0/sign-1.0.jar
+      - run: wget https://github.com/appium-boneyard/sign/releases/download/1.0/sign-1.0.jar
 
       - name: Sign APK with testkeys
       - run: java -jar sign-1.0.jar app/build/outputs/apk/release/app-release-unsigned.apk --override
